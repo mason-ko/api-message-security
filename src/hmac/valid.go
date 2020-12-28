@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 const (
@@ -18,7 +19,7 @@ var (
 	__secret = []byte("secret")
 )
 
-func ValidGinMiddleware(c *gin.Context){
+func ValidGinMiddleware(c *gin.Context) {
 	r := c.Request
 	hash := r.Header.Get(HeaderHash)
 	timestamp := r.Header.Get(HeaderTimestamp)
@@ -59,4 +60,8 @@ func MakeMac(data string, key []byte) string {
 	bytes := h.Sum(nil)
 	str := base64.StdEncoding.EncodeToString(bytes)
 	return str
+}
+
+func GetData(params ...string) string {
+	return strings.Join(params, DataSeparator)
 }
