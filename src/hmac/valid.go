@@ -1,6 +1,7 @@
 package hmac
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -45,6 +46,7 @@ func ValidGinMiddleware(c *gin.Context) {
 			c.AbortWithStatusJSON(401, err)
 			return
 		}
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body)) // Write body back
 
 		data = GetData(r.Method, r.URL.RequestURI(), timestamp, string(body))
 	}

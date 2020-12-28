@@ -2,6 +2,7 @@ package main
 
 import (
 	"api-message-security/src/hmac"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 )
@@ -18,15 +19,8 @@ func NewServer() Server {
 
 func (s *Server) RegisterRoute() {
 	s.GET("/api/test", func(c *gin.Context) {
-		body, err := ioutil.ReadAll(c.Request.Body)
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-
 		c.JSON(200, gin.H{
 			"message": "pong",
-			"body":    string(body),
 		})
 	})
 
@@ -37,9 +31,12 @@ func (s *Server) RegisterRoute() {
 			return
 		}
 
+		var bodyJson interface{}
+		json.Unmarshal(body, &bodyJson)
+
 		c.JSON(200, gin.H{
 			"message": "pong",
-			"body":    string(body),
+			"body":    bodyJson,
 		})
 	})
 }
