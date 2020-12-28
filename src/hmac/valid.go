@@ -4,8 +4,9 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
 	"strings"
 )
 
@@ -29,13 +30,23 @@ func ValidGinMiddleware(c *gin.Context) {
 		return
 	}
 
-	data := r.Method + DataSeparator + r.URL.Path + DataSeparator + timestamp
-	fmt.Println(hash, timestamp, data)
-
 	h, err := base64.StdEncoding.DecodeString(hash)
 	if err != nil {
 		c.AbortWithStatus(401)
 		return
+	}
+
+	var data string
+	if c.Request.Method == http.MethodGet {
+		data = GetData(r.Method, r.URL.RequestURI(), timestamp)
+	} else {
+		body, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			c.AbortWithStatusJSON(401, err)
+			return
+		}
+
+		data = GetData(r.Method, r.URL.RequestURI(), timestamp, string(body))
 	}
 
 	result := ValidMAC([]byte(data), h, __secret)
