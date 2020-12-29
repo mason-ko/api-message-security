@@ -12,6 +12,7 @@ import (
 
 func TestValidMAC_Direct(t *testing.T) {
 	data := "/user/info"
+	__secret := []byte("secret")
 
 	fmt.Printf("Secret: %s Data: %s\n", __secret, data)
 
@@ -28,6 +29,8 @@ func TestMakeMacGet(t *testing.T) {
 	time := "2020-12-23T08:28:26.737Z"
 
 	data := GetData(method, api, time)
+
+	__secret := []byte("secret")
 
 	ret := MakeMac(data, __secret)
 	bytes, _ := base64.StdEncoding.DecodeString(ret)
@@ -50,6 +53,8 @@ func TestMakeMacPost(t *testing.T) {
 	b, _ := json.Marshal(obj)
 
 	data := GetData(method, api, time, string(b))
+
+	__secret := []byte("secret")
 
 	ret := MakeMac(data, __secret)
 	bytes, _ := base64.StdEncoding.DecodeString(ret)

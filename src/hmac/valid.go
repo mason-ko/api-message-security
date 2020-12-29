@@ -17,12 +17,19 @@ const (
 	DataSeparator   = "|"
 )
 
-var (
-	__secret = []byte("secret")
-)
+type validator struct {
+	secret []byte
+}
 
-func ValidGinMiddleware(c *gin.Context) {
+func NewValidator(secret string) validator {
+	return validator{
+		secret: []byte(secret),
+	}
+}
+
+func (v validator) ValidGinMiddleware(c *gin.Context) {
 	r := c.Request
+
 	hash := r.Header.Get(HeaderHash)
 	timestamp := r.Header.Get(HeaderTimestamp)
 
@@ -51,7 +58,7 @@ func ValidGinMiddleware(c *gin.Context) {
 		data = GetData(r.Method, r.URL.RequestURI(), timestamp, string(body))
 	}
 
-	result := ValidMAC([]byte(data), h, __secret)
+	result := ValidMAC([]byte(data), h, v.secret)
 	if !result {
 		c.AbortWithStatus(401)
 		return

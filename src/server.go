@@ -13,7 +13,9 @@ type Server struct {
 
 func NewServer() Server {
 	r := gin.Default()
-	r.Use(hmac.ValidGinMiddleware)
+	validator := hmac.NewValidator("secret")
+	r.Use(validator.ValidGinMiddleware)
+	//r.Use(validator.ValidGinMiddleware)
 	return Server{r}
 }
 
